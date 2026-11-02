@@ -1,0 +1,87 @@
+#include <stdio.h>
+
+typedef struct {
+    char name;
+    int start;
+    int end;
+} Interval;
+
+void sortByStart(Interval arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+
+            if (arr[i].start > arr[j].start) {
+                Interval temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+
+    Interval intervals[] = {
+        {'A', 9, 10},
+        {'B', 9, 11},
+        {'C', 10, 12},
+        {'D', 11, 13},
+        {'E', 12, 14}
+    };
+
+    int n = sizeof(intervals) / sizeof(intervals[0]);
+
+    // Stores the ending time of each room
+    int roomEnd[100];
+
+    // Stores the room assigned to each interval
+    int roomAssigned[100];
+
+    int rooms = 0;
+
+    // Sort intervals by starting time
+    sortByStart(intervals, n);
+
+    for (int i = 0; i < n; i++) {
+
+        int assigned = 0;
+
+        // Check if an existing room is free
+        for (int j = 0; j < rooms; j++) {
+
+            if (intervals[i].start >= roomEnd[j]) {
+
+                roomEnd[j] = intervals[i].end;
+                roomAssigned[i] = j + 1;
+
+                assigned = 1;
+                break;
+            }
+        }
+
+        // If no room is free, create a new room
+        if (!assigned) {
+
+            roomEnd[rooms] = intervals[i].end;
+            roomAssigned[i] = rooms + 1;
+
+            rooms++;
+        }
+    }
+
+    printf("Interval Partitioning\n");
+    printf("======================\n\n");
+
+    for (int i = 0; i < n; i++) {
+
+        printf("Class %c (%d-%d) -> Room %d\n",
+               intervals[i].name,
+               intervals[i].start,
+               intervals[i].end,
+               roomAssigned[i]);
+    }
+
+    printf("\nMinimum number of rooms required = %d\n", rooms);
+
+    return 0;
+}
