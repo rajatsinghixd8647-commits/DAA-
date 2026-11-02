@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int main() {
+
+    int weight[] = {1, 3, 4, 5};
+    int value[] = {1, 4, 5, 7};
+
+    int n = 4;
+    int capacity = 7;
+
+    int dp[n + 1][capacity + 1];
+
+    // Build DP table
+    for (int i = 0; i <= n; i++) {
+
+        for (int w = 0; w <= capacity; w++) {
+
+            // No items or capacity 0
+            if (i == 0 || w == 0) {
+                dp[i][w] = 0;
+            }
+
+            // If item can fit
+            else if (weight[i - 1] <= w) {
+
+                dp[i][w] = max(
+                    value[i - 1] + dp[i - 1][w - weight[i - 1]],
+                    dp[i - 1][w]
+                );
+            }
+
+            // Item cannot fit
+            else {
+                dp[i][w] = dp[i - 1][w];
+            }
+        }
+    }
+
+    printf("0/1 Knapsack Problem\n");
+    printf("====================\n\n");
+
+    printf("Maximum value = %d\n", dp[n][capacity]);
+
+    // Find selected items
+    int w = capacity;
+
+    printf("\nSelected items:\n");
+
+    for (int i = n; i > 0; i--) {
+
+        if (dp[i][w] != dp[i - 1][w]) {
+
+            printf("Item %d -> Weight = %d, Value = %d\n",
+                   i,
+                   weight[i - 1],
+                   value[i - 1]);
+
+            w = w - weight[i - 1];
+        }
+    }
+
+    return 0;
+}
